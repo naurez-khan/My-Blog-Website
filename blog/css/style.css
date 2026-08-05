@@ -382,6 +382,10 @@ button:focus-visible {
   margin: 0 0 28px;
 }
 
+.contact-links a {
+  font-size: 0.95rem;
+}
+
 .page-body p {
   margin: 0 0 22px;
   color: var(--ink-soft);
@@ -499,4 +503,5 @@ button:focus-visible {
   .site-title { font-size: 1.55rem; white-space: nowrap; }
   .post-title { font-size: 1.6rem; }
   .site-header { padding: 40px 24px 24px; }
+  .contact-links a { font-size: 0.88rem; }
 }
