@@ -1,0 +1,26 @@
+[
+  {
+    "id": "why-im-starting-this-blog",
+    "title": "Why I'm Starting This Blog",
+    "date": "2026-08-04",
+    "tags": ["beginnings"],
+    "paragraphs": [
+      "I've wanted to write in public for a while now, and kept finding reasons to wait. The reasons were always the same shape: not enough time, nothing important enough to say, someone's probably already said it better.",
+      "None of that turns out to matter much. This isn't going to be a place for finished thoughts. It's a place for the ones still taking shape — notes, half-ideas, things I noticed and didn't want to lose.",
+      "So here's the first one. More soon."
+    ]
+  },
+
+  {
+    "id": "What-i-love",
+    "title": "What I Love To write",
+    "date": "2026-08-4",
+    "tags": ["Blog 1"],
+    "coverImage": "avatar.jpg",
+    "paragraphs": [
+      "i am really impressed i started this thing",
+      { "image": "avatar.jpg", "alt": "example photo", "caption": "You can add a picture like this anywhere inside a post — just drop it into the paragraphs array." },
+      "i hope to see u every day."
+    ]
+  }
+]
