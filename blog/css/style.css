@@ -496,7 +496,7 @@ button:focus-visible {
 
 @media (max-width: 480px) {
   body { font-size: 17px; }
-  .site-title { font-size: 1.45rem; white-space: nowrap; }
+  .site-title { font-size: 1.55rem; white-space: nowrap; }
   .post-title { font-size: 1.6rem; }
   .site-header { padding: 40px 24px 24px; }
 }
