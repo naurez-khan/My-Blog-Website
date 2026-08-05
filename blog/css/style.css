@@ -51,27 +51,34 @@ button:focus-visible {
 /* ---------- Site header (always full width, on top) ---------- */
 
 .site-header {
-  padding: 64px 0 32px;
+  max-width: var(--wide-width);
+  padding: 64px 24px 32px;
   border-bottom: 1px solid var(--rule);
-  margin-bottom: 48px;
+  margin: 0 auto 48px;
   position: relative;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 .site-title-link {
   text-decoration: none;
   color: var(--ink);
   display: inline-block;
+  margin: 0;
 }
 
 .site-title {
   font-family: 'Fraunces', serif;
   font-weight: 600;
-  font-size: 2.1rem;
+  font-size: 2.5rem;
   letter-spacing: -0.01em;
   margin: 0;
   position: relative;
   display: inline-block;
+  white-space: nowrap;
 }
 
 /* Hand-drawn underline mark — the signature element */
@@ -94,7 +101,7 @@ button:focus-visible {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.8rem;
   color: var(--ink-faint);
-  margin: 10px 0 20px;
+  margin: 10px auto 20px;
   letter-spacing: 0.02em;
 }
 
@@ -102,7 +109,9 @@ button:focus-visible {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.82rem;
   display: flex;
+  justify-content: center;
   gap: 20px;
+  width: 100%;
 }
 
 .site-nav a {
@@ -487,7 +496,7 @@ button:focus-visible {
 
 @media (max-width: 480px) {
   body { font-size: 17px; }
-  .site-title { font-size: 1.7rem; }
+  .site-title { font-size: 1.2rem; white-space: nowrap; }
   .post-title { font-size: 1.6rem; }
-  .site-header { padding: 40px 0 24px; }
+  .site-header { padding: 40px 24px 24px; }
 }
