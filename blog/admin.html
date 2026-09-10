@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Muhammad Naurez Khan</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+
+<!-- LOGIN -->
+<div id="login-view">
+  <h1>Sign in</h1>
+  <form id="login-form">
+    <label for="email">Email</label>
+    <input type="email" id="email" required autocomplete="username">
+    <label for="password">Password</label>
+    <input type="password" id="password" required autocomplete="current-password">
+    <p id="login-error" class="hint" style="color:#A33D3D;"></p>
+    <div style="margin-top:20px;">
+      <button type="submit" class="btn-primary">Sign in</button>
+    </div>
+  </form>
+</div>
+
+<!-- POST LIST -->
+<div class="admin-wrap hidden" id="list-view">
+  <div class="admin-top-bar">
+    <h1>Posts</h1>
+    <div style="display:flex; gap:18px; align-items:center;">
+      <button id="new-post-btn" class="btn-primary">New post</button>
+      <button id="logout-btn" class="btn-link">Sign out</button>
+    </div>
+  </div>
+  <div id="post-list"></div>
+</div>
+
+<!-- EDITOR -->
+<div class="admin-wrap hidden" id="editor-view">
+  <div class="admin-top-bar">
+    <h1 id="editor-heading">New post</h1>
+    <button id="back-btn">← Back to posts</button>
+  </div>
+
+  <label for="title">Title</label>
+  <input type="text" id="title" placeholder="Give your post a title">
+
+  <label for="slug">URL slug</label>
+  <input type="text" id="slug" placeholder="auto-generated-from-title">
+  <p class="hint">This becomes blog.html?post=your-slug — best left as-is once published, since it's the post's permanent address.</p>
+
+  <label for="date">Date</label>
+  <input type="date" id="date">
+
+  <label for="tags">Tags (comma-separated, optional)</label>
+  <input type="text" id="tags" placeholder="beginnings, notes">
+
+  <label for="cover-image">Cover image (optional — shown at the top of the post)</label>
+  <input type="text" id="cover-image" placeholder="https://... or leave blank">
+  <div class="image-upload-row">
+    <input type="file" id="cover-upload" accept="image/*">
+    <span id="cover-upload-status" class="hint"></span>
+  </div>
+  <img id="cover-preview" class="thumb-preview" alt="Cover preview">
+
+  <label for="inline-upload">Add an image to use inside your post</label>
+  <div class="image-upload-row">
+    <input type="file" id="inline-upload" accept="image/*">
+    <span id="inline-upload-status" class="hint"></span>
+  </div>
+  <div id="inline-upload-result" class="upload-result hidden"></div>
+
+  <label for="content">Content (Markdown)</label>
+  <textarea id="content" placeholder="Write your post here..."></textarea>
+  <p class="hint">Blank line = new paragraph. **bold**, *italic*, ## heading. For an image with a caption: ![alt text](image-url "caption text") — upload an image above to get a URL to paste in.</p>
+
+  <div class="checkbox-row">
+    <input type="checkbox" id="published">
+    <label for="published">Published (visible on the blog)</label>
+  </div>
+
+  <div class="editor-actions">
+    <button id="save-btn" class="btn-primary">Save</button>
+    <button id="delete-btn" class="btn-danger hidden">Delete post</button>
+    <span id="save-status"></span>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="config.js"></script>
+<script>
+  const loginView = document.getElementById("login-view");
+  const listView = document.getElementById("list-view");
+  const editorView = document.getElementById("editor-view");
+
+  let currentPostId = null;
+  let slugManuallyEdited = false;
+
+  /* ---------- auth ---------- */
+
+  async function checkSession() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) showList();
+    else showLogin();
+  }
+
+  document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const errorEl = document.getElementById("login-error");
+    errorEl.textContent = "";
+
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) {
+      errorEl.textContent = "Couldn't sign in. Check your email and password.";
+      return;
+    }
+    showList();
+  });
+
+  document.getElementById("logout-btn").addEventListener("click", async () => {
+    await supabaseClient.auth.signOut();
+    showLogin();
+  });
+
+  function showLogin() {
+    loginView.classList.remove("hidden");
+    listView.classList.add("hidden");
+    editorView.classList.add("hidden");
+  }
+
+  async function showList() {
+    loginView.classList.add("hidden");
+    editorView.classList.add("hidden");
+    listView.classList.remove("hidden");
+    await loadList();
+  }
+
+  function showEditor() {
+    listView.classList.add("hidden");
+    editorView.classList.remove("hidden");
+  }
+
+  /* ---------- list ---------- */
+
+  async function loadList() {
+    const container = document.getElementById("post-list");
+    container.innerHTML = `<p class="post-row-meta">Loading…</p>`;
+    try {
+      const posts = await loadAllPostsForAdmin();
+      if (!posts.length) {
+        container.innerHTML = `<p class="post-row-meta">No posts yet. Click "New post" to write your first one.</p>`;
+        return;
+      }
+      container.innerHTML = posts.map(post => `
+        <div class="post-row">
+          <div>
+            <div class="post-row-title">
+              ${escapeHtml(post.title)}
+              ${post.published ? `<span class="badge published">Published</span>` : `<span class="badge">Draft</span>`}
+            </div>
+            <div class="post-row-meta">${post.date}</div>
+          </div>
+          <button data-edit="${post.id}">Edit</button>
+        </div>
+      `).join("");
+
+      container.querySelectorAll("[data-edit]").forEach(btn => {
+        btn.addEventListener("click", () => openEditor(btn.dataset.edit));
+      });
+    } catch (err) {
+      console.error(err);
+      container.innerHTML = `<p class="post-row-meta">Couldn't load posts. Check your Supabase config.</p>`;
+    }
+  }
+
+  /* ---------- editor ---------- */
+
+  document.getElementById("new-post-btn").addEventListener("click", () => {
+    resetEditor();
+    showEditor();
+  });
+
+  document.getElementById("back-btn").addEventListener("click", showList);
+
+  function resetEditor() {
+    currentPostId = null;
+    slugManuallyEdited = false;
+    document.getElementById("editor-heading").textContent = "New post";
+    document.getElementById("title").value = "";
+    document.getElementById("slug").value = "";
+    document.getElementById("date").value = new Date().toISOString().slice(0, 10);
+    document.getElementById("tags").value = "";
+    document.getElementById("cover-image").value = "";
+    document.getElementById("content").value = "";
+    document.getElementById("published").checked = false;
+    document.getElementById("delete-btn").classList.add("hidden");
+    document.getElementById("save-status").textContent = "";
+    document.getElementById("cover-preview").style.display = "none";
+    document.getElementById("inline-upload-result").classList.add("hidden");
+  }
+
+  async function openEditor(postId) {
+    resetEditor();
+    const { data: post, error } = await supabaseClient
+      .from("posts")
+      .select("*")
+      .eq("id", postId)
+      .single();
+    if (error) {
+      alert("Couldn't load that post.");
+      return;
+    }
+    currentPostId = post.id;
+    slugManuallyEdited = true;
+    document.getElementById("editor-heading").textContent = "Edit post";
+    document.getElementById("title").value = post.title;
+    document.getElementById("slug").value = post.id;
+    document.getElementById("date").value = post.date;
+    document.getElementById("tags").value = (post.tags || []).join(", ");
+    document.getElementById("cover-image").value = post.cover_image || "";
+    document.getElementById("content").value = post.content;
+    document.getElementById("published").checked = post.published;
+    document.getElementById("delete-btn").classList.remove("hidden");
+    if (post.cover_image) {
+      const preview = document.getElementById("cover-preview");
+      preview.src = post.cover_image;
+      preview.style.display = "block";
+    }
+    showEditor();
+  }
+
+  document.getElementById("title").addEventListener("input", (e) => {
+    if (!slugManuallyEdited) {
+      document.getElementById("slug").value = slugify(e.target.value);
+    }
+  });
+
+  document.getElementById("slug").addEventListener("input", () => {
+    slugManuallyEdited = true;
+  });
+
+  /* ---------- image uploads ---------- */
+
+  document.getElementById("cover-upload").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const status = document.getElementById("cover-upload-status");
+    status.textContent = "Uploading…";
+    try {
+      const url = await uploadImage(file);
+      document.getElementById("cover-image").value = url;
+      const preview = document.getElementById("cover-preview");
+      preview.src = url;
+      preview.style.display = "block";
+      status.textContent = "Uploaded.";
+    } catch (err) {
+      console.error(err);
+      status.textContent = "Upload failed.";
+    }
+  });
+
+  document.getElementById("inline-upload").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const status = document.getElementById("inline-upload-status");
+    const resultBox = document.getElementById("inline-upload-result");
+    status.textContent = "Uploading…";
+    try {
+      const url = await uploadImage(file);
+      resultBox.classList.remove("hidden");
+      resultBox.innerHTML = `Paste this where you want the image:<br><code>![describe the image](${url} "optional caption")</code>`;
+      status.textContent = "Uploaded.";
+    } catch (err) {
+      console.error(err);
+      status.textContent = "Upload failed.";
+    }
+  });
+
+  /* ---------- save / delete ---------- */
+
+  document.getElementById("save-btn").addEventListener("click", async () => {
+    const statusEl = document.getElementById("save-status");
+    const title = document.getElementById("title").value.trim();
+    const slug = document.getElementById("slug").value.trim();
+    const date = document.getElementById("date").value;
+    const tags = document.getElementById("tags").value
+      .split(",").map(t => t.trim()).filter(Boolean);
+    const coverImage = document.getElementById("cover-image").value.trim() || null;
+    const content = document.getElementById("content").value;
+    const published = document.getElementById("published").checked;
+
+    if (!title || !slug || !content || !date) {
+      statusEl.textContent = "Title, slug, date, and content are required.";
+      return;
+    }
+
+    statusEl.textContent = "Saving…";
+
+    if (currentPostId && currentPostId !== slug) {
+      // slug changed on an existing post — treat as a new row, remove the old one
+      await supabaseClient.from("posts").delete().eq("id", currentPostId);
+      currentPostId = null;
+    }
+
+    const payload = {
+      id: slug, title, date, tags,
+      cover_image: coverImage, content, published,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { error } = await supabaseClient.from("posts").upsert(payload);
+
+    if (error) {
+      statusEl.textContent = "Something went wrong saving this post.";
+      console.error(error);
+      return;
+    }
+
+    currentPostId = slug;
+    statusEl.textContent = published ? "Published." : "Saved as draft.";
+    document.getElementById("delete-btn").classList.remove("hidden");
+  });
+
+  document.getElementById("delete-btn").addEventListener("click", async () => {
+    if (!currentPostId) return;
+    if (!confirm("Delete this post? This can't be undone.")) return;
+    const { error } = await supabaseClient.from("posts").delete().eq("id", currentPostId);
+    if (error) {
+      alert("Couldn't delete this post.");
+      return;
+    }
+    showList();
+  });
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  checkSession();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,225 @@
+/* css/admin.css — additive styles for admin.html only.
+   Reuses the color/type variables already defined in css/style.css. */
+
+body.admin-body {
+  --paper-soft: #fff7ed;
+  --ink: var(--text, #222222);
+  --ink-soft: var(--text-light, #666666);
+  --ink-faint: #888888;
+  --stamp: var(--accent, #EA580C);
+  --rule: var(--border, #ECECEC);
+  font-family: 'Source Serif 4', Georgia, serif;
+}
+
+.admin-wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 56px 24px 100px;
+}
+
+.admin-wrap h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 1.9rem;
+  margin: 0 0 32px;
+}
+
+/* ---------- login ---------- */
+
+#login-view {
+  max-width: 360px;
+  margin: 100px auto;
+  padding: 32px;
+  background: var(--paper-soft);
+  border: 1px solid var(--rule);
+}
+
+#login-view h1 { font-size: 1.5rem; margin-bottom: 20px; }
+
+/* ---------- form elements ---------- */
+
+label {
+  display: block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--olive);
+  margin: 20px 0 8px;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="date"],
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 1rem;
+  border: 1px solid var(--rule);
+  background: #fff;
+  color: var(--ink);
+}
+
+input:focus, textarea:focus {
+  outline: 2px solid var(--stamp);
+  outline-offset: 1px;
+}
+
+textarea#content {
+  min-height: 340px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.hint {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  margin-top: 6px;
+}
+
+/* ---------- buttons ---------- */
+
+button {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82rem;
+  cursor: pointer;
+  border: 1px solid var(--rule);
+  background: #fff;
+  color: var(--ink);
+  padding: 9px 16px;
+}
+
+button:hover { border-color: var(--stamp); color: var(--stamp); }
+
+.btn-primary {
+  background: var(--stamp);
+  border-color: var(--stamp);
+  color: #fff;
+}
+
+.btn-primary:hover { background: #7c2117; color: #fff; }
+
+.btn-danger:hover { border-color: #A33D3D; color: #A33D3D; }
+
+.btn-link {
+  border: none;
+  background: none;
+  text-decoration: underline;
+  color: var(--ink-soft);
+  padding: 0;
+}
+
+/* ---------- top bar ---------- */
+
+.admin-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.admin-top-bar h1 { margin: 0; }
+
+/* ---------- post list ---------- */
+
+.post-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.post-row:first-child { border-top: none; }
+
+.post-row-title { font-weight: 600; }
+
+.post-row-meta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
+
+.badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  margin-left: 8px;
+  border: 1px solid var(--rule);
+}
+
+.badge.published { color: var(--olive); border-color: var(--olive); }
+
+/* ---------- editor ---------- */
+
+.editor-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+#save-status {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.checkbox-row input { width: auto; }
+
+.checkbox-row label {
+  margin: 0;
+  text-transform: none;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+/* ---------- image upload helper ---------- */
+
+.image-upload-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.image-upload-row input[type="file"] {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+}
+
+.upload-result {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: var(--paper-soft);
+  border: 1px solid var(--rule);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  word-break: break-all;
+}
+
+.thumb-preview {
+  width: 100%;
+  max-height: 160px;
+  object-fit: cover;
+  border: 1px solid var(--rule);
+  margin-top: 10px;
+  display: none;
+}
+
+.hidden { display: none !important; }

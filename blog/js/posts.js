@@ -1,123 +1,68 @@
-// posts.js — loads data/posts.json and renders it.
+// js/posts.js — loads posts from Supabase and renders them.
 //
-// To add a new post: open data/posts.json and add a new object at the
-// top of the array (newest first isn't required — sorting happens here
-// automatically by date).
+// This file replaces the old version that read data/posts.json.
+// It must load AFTER the supabase-js CDN script and config.js
+// (see the <script> tags added to index.html and blog.html).
 //
-// Each post's "paragraphs" array can mix two kinds of entries:
-//   1. A plain string        -> rendered as a paragraph of text.
-//   2. An image block, e.g.:
-//        { "image": "images/my-photo.jpg", "alt": "description", "caption": "optional caption" }
-//      -> rendered as a picture inside the post, with an optional caption.
-//
-// A post can also have a top-of-post / preview picture via "coverImage":
-//   "coverImage": "images/my-photo.jpg"
-// It's shown as a banner on the single post page and as a thumbnail on
-// the home page preview.
-//
-// Put your image files in the images/ folder and reference them as
-// "images/filename.jpg" (paths are relative to the site root).
+// To add a new post, don't edit this file — go to admin.html on
+// your site, log in, write, and click Publish.
 
-const POSTS_URL = 'data/posts.json';
-
-function formatDate(dateStr) {
-  const [y, m, d] = dateStr.split('-').map(Number);
-  const date = new Date(y, m - 1, d);
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
-
-async function loadPosts() {
-  const res = await fetch(POSTS_URL);
-  if (!res.ok) throw new Error('Could not load posts.json');
-  const posts = await res.json();
-  // newest first
-  return posts.slice().sort((a, b) => (a.date < b.date ? 1 : -1));
-}
-
-function firstTextParagraph(post) {
-  const blocks = post.paragraphs || [];
-  const textBlock = blocks.find((b) => typeof b === 'string');
-  return textBlock || '';
+function firstParagraph(markdown) {
+  const withoutImages = (markdown || "").replace(/!\[.*?\]\(.*?\)/g, "");
+  const plain = withoutImages.replace(/[#*_`>]/g, "").trim();
+  return plain.split(/\n\s*\n/)[0] || "";
 }
 
 function excerptOf(post, maxLen = 160) {
-  const text = firstTextParagraph(post);
+  const text = firstParagraph(post.content);
   if (text.length <= maxLen) return text;
-  return text.slice(0, maxLen).trim() + '…';
+  return text.slice(0, maxLen).trim() + "…";
 }
 
 /* ---------------- Home page ---------------- */
 
 async function renderHome() {
-  const mount = document.getElementById('latest-post');
+  const mount = document.getElementById("latest-post");
   if (!mount) return;
   try {
     const posts = await loadPosts();
     if (posts.length === 0) {
-      mount.innerHTML = '<p class="empty-state">No posts yet — add one in data/posts.json.</p>';
+      mount.innerHTML = '<p class="empty-state">No posts yet — write your first one at admin.html.</p>';
       return;
     }
-
-    const latestPosts = posts.slice(0, 3);
-    const homeHtml = latestPosts.map((post) => {
-      const thumbHtml = post.coverImage
-        ? `<img class="post-preview-thumb" src="${post.coverImage}" alt="">`
-        : '';
-
-      return `
-        <article class="post-preview">
-          ${thumbHtml}
-          <h3 class="post-preview-title"><a href="blog.html?post=${encodeURIComponent(post.id)}">${post.title}</a></h3>
-          <p class="post-meta">${formatDate(post.date)}</p>
-          <p class="post-excerpt">${excerptOf(post)}</p>
-          <a class="read-more" href="blog.html?post=${encodeURIComponent(post.id)}">Read the full post →</a>
-        </article>
-      `;
-    }).join('');
-
-    mount.innerHTML = homeHtml;
+    const latest = posts[0];
+    const thumbHtml = latest.cover_image
+      ? `<img class="post-preview-thumb" src="${latest.cover_image}" alt="">`
+      : "";
+    mount.innerHTML = `
+      <article class="post-preview">
+        ${thumbHtml}
+        <h3 class="post-preview-title"><a href="blog.html?post=${encodeURIComponent(latest.id)}">${latest.title}</a></h3>
+        <p class="post-meta">${formatDate(latest.date)}</p>
+        <p class="post-excerpt">${excerptOf(latest)}</p>
+        <a class="read-more" href="blog.html?post=${encodeURIComponent(latest.id)}">Read the full post →</a>
+      </article>
+    `;
   } catch (err) {
-    mount.innerHTML = `<p class="empty-state">Couldn't load posts. If you're opening this file directly in a browser, run a local server (e.g. <code>python3 -m http.server</code>) and open it from there instead.</p>`;
+    mount.innerHTML = `<p class="empty-state">Couldn't load posts. Check config.js has your Supabase details.</p>`;
     console.error(err);
   }
 }
 
 /* ---------------- Blog / single post page ---------------- */
 
-function renderBodyBlock(block) {
-  if (typeof block === 'string') {
-    return `<p>${block}</p>`;
-  }
-  if (block && block.image) {
-    const caption = block.caption
-      ? `<figcaption>${block.caption}</figcaption>`
-      : '';
-    return `
-      <figure class="post-image">
-        <img src="${block.image}" alt="${block.alt || ''}">
-        ${caption}
-      </figure>
-    `;
-  }
-  return '';
-}
-
 async function renderPost() {
-  const mount = document.getElementById('post-mount');
+  const mount = document.getElementById("post-mount");
   if (!mount) return;
   try {
     const posts = await loadPosts();
     if (posts.length === 0) {
-      mount.innerHTML = '<p class="empty-state">No posts yet — add one in data/posts.json.</p>';
+      mount.innerHTML = '<p class="empty-state">No posts yet — write your first one at admin.html.</p>';
       return;
     }
 
     const params = new URLSearchParams(window.location.search);
-    const requestedId = params.get('post');
+    const requestedId = params.get("post");
     let index = requestedId ? posts.findIndex((p) => p.id === requestedId) : 0;
     if (index === -1) index = 0;
 
@@ -127,19 +72,19 @@ async function renderPost() {
 
     const tagsHtml = (post.tags || [])
       .map((t) => `<span class="post-tag">${t}</span>`)
-      .join('');
+      .join("");
 
-    const coverHtml = post.coverImage
-      ? `<img class="post-cover" src="${post.coverImage}" alt="">`
-      : '';
+    const coverHtml = post.cover_image
+      ? `<img class="post-cover" src="${post.cover_image}" alt="">`
+      : "";
 
-    const bodyHtml = (post.paragraphs || []).map(renderBodyBlock).join('');
+    const bodyHtml = renderMarkdown(post.content);
 
     mount.innerHTML = `
       <article>
         <h1 class="post-title">${post.title}</h1>
         <p class="post-meta">${formatDate(post.date)}</p>
-        ${tagsHtml ? `<div class="post-tags">${tagsHtml}</div>` : ''}
+        ${tagsHtml ? `<div class="post-tags">${tagsHtml}</div>` : ""}
         ${coverHtml}
         <div class="post-body">${bodyHtml}</div>
       </article>
@@ -159,12 +104,12 @@ async function renderPost() {
 
     document.title = `${post.title} — Blog`;
   } catch (err) {
-    mount.innerHTML = `<p class="empty-state">Couldn't load posts. If you're opening this file directly in a browser, run a local server (e.g. <code>python3 -m http.server</code>) and open it from there instead.</p>`;
+    mount.innerHTML = `<p class="empty-state">Couldn't load posts. Check config.js has your Supabase details.</p>`;
     console.error(err);
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   renderHome();
   renderPost();
 });
