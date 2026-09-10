@@ -6,7 +6,7 @@ body.admin-body {
   --ink: var(--text, #222222);
   --ink-soft: var(--text-light, #666666);
   --ink-faint: #888888;
-  --stamp: var(--accent, #EA580C);
+  --stamp: #9C2B1F;
   --rule: var(--border, #ECECEC);
   font-family: 'Source Serif 4', Georgia, serif;
 }
