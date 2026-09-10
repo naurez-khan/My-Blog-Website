@@ -443,19 +443,13 @@ body.admin-body {
 }
 .upload-result code { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.sticky-actions {
-  position: sticky;
-  z-index: 5;
-  bottom: 14px;
+.static-actions {
   margin-top: 20px;
   padding: 13px 16px;
   border: 1px solid var(--rule);
-  background: rgba(243, 239, 229, 0.96);
-  box-shadow: 0 10px 30px rgba(28, 27, 25, 0.12);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.43);
 }
 
-.sticky-actions .checkbox-row { margin: 0; }
 .action-spacer { flex: 1; }
 #dirty-status { color: var(--ink-faint); font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; }
 
@@ -473,6 +467,5 @@ body.admin-body {
   .post-row { grid-template-columns: 1fr; gap: 12px; }
   .post-row-actions { justify-content: space-between; }
   .upload-zone { grid-template-columns: 1fr; }
-  .sticky-actions { bottom: 8px; }
   #dirty-status { display: none; }
 }

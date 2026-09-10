@@ -121,16 +121,14 @@
     </aside>
   </div>
 
-  <div class="editor-actions sticky-actions">
-    <div class="checkbox-row">
-      <input type="checkbox" id="published">
-      <label for="published">Published</label>
-    </div>
+  <div class="editor-actions static-actions">
+    <input type="checkbox" id="published" class="hidden" tabindex="-1" aria-hidden="true">
     <span id="dirty-status">All changes saved</span>
     <span id="save-status" role="status"></span>
     <div class="action-spacer"></div>
     <button id="delete-btn" class="btn-danger hidden">Delete post</button>
-    <button id="save-btn" class="btn-primary">Save</button>
+    <button id="save-btn">Save draft</button>
+    <button id="publish-btn" class="btn-primary">Publish</button>
   </div>
 </div>
 
@@ -357,8 +355,6 @@
   editorView.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(field => {
     field.addEventListener("input", () => { markDirty(); updatePreview(); });
   });
-  document.getElementById("published").addEventListener("change", () => { markDirty(); updatePreview(); });
-
   document.querySelectorAll("[data-format]").forEach(button => {
     button.addEventListener("click", () => insertMarkdown(button.dataset.format));
   });
@@ -432,7 +428,10 @@
 
   /* ---------- save / delete ---------- */
 
-  document.getElementById("save-btn").addEventListener("click", async () => {
+  document.getElementById("save-btn").addEventListener("click", () => savePost(false));
+  document.getElementById("publish-btn").addEventListener("click", () => savePost(true));
+
+  async function savePost(published) {
     const statusEl = document.getElementById("save-status");
     const title = document.getElementById("title").value.trim();
     const slug = document.getElementById("slug").value.trim();
@@ -441,7 +440,7 @@
       .split(",").map(t => t.trim()).filter(Boolean);
     const coverImage = document.getElementById("cover-image").value.trim() || null;
     const content = document.getElementById("content").value;
-    const published = document.getElementById("published").checked;
+    document.getElementById("published").checked = published;
 
     if (!title || !slug || !content || !date) {
       statusEl.textContent = "Title, slug, date, and content are required.";
@@ -474,7 +473,8 @@
     statusEl.textContent = published ? "Published." : "Saved as draft.";
     document.getElementById("delete-btn").classList.remove("hidden");
     markClean();
-  });
+    updatePreview();
+  }
 
   document.getElementById("delete-btn").addEventListener("click", async () => {
     if (!currentPostId) return;
