@@ -67,7 +67,7 @@ async function loadPosts() {
 async function loadAllPostsForAdmin() {
   const { data, error } = await supabaseClient
     .from("posts")
-    .select("id, title, date, published, updated_at")
+    .select("id, title, date, tags, published, updated_at")
     .order("date", { ascending: false });
   if (error) throw error;
   return data;

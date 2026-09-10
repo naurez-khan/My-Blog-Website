@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
 <title>Admin — Muhammad Naurez Khan</title>
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/admin.css">
@@ -11,7 +12,9 @@
 
 <!-- LOGIN -->
 <div id="login-view">
+  <p class="admin-kicker">Naurez.co · Editor</p>
   <h1>Sign in</h1>
+  <p class="login-intro">A quiet place to write, revise, and publish.</p>
   <form id="login-form">
     <label for="email">Email</label>
     <input type="email" id="email" required autocomplete="username">
@@ -27,63 +30,107 @@
 <!-- POST LIST -->
 <div class="admin-wrap hidden" id="list-view">
   <div class="admin-top-bar">
-    <h1>Posts</h1>
-    <div style="display:flex; gap:18px; align-items:center;">
+    <div>
+      <p class="admin-kicker">Naurez.co · Editor</p>
+      <h1>Posts</h1>
+    </div>
+    <div class="top-actions">
+      <a href="index.html" class="btn-secondary">View site ↗</a>
       <button id="new-post-btn" class="btn-primary">New post</button>
       <button id="logout-btn" class="btn-link">Sign out</button>
     </div>
   </div>
+  <div id="post-summary" class="post-summary" aria-live="polite"></div>
   <div id="post-list"></div>
 </div>
 
 <!-- EDITOR -->
 <div class="admin-wrap hidden" id="editor-view">
   <div class="admin-top-bar">
-    <h1 id="editor-heading">New post</h1>
-    <button id="back-btn">← Back to posts</button>
+    <div>
+      <p class="admin-kicker">Naurez.co · Editor</p>
+      <h1 id="editor-heading">New post</h1>
+    </div>
+    <div class="top-actions">
+      <a href="blog.html" class="btn-secondary">View blog ↗</a>
+      <button id="back-btn">← Posts</button>
+    </div>
   </div>
 
-  <label for="title">Title</label>
-  <input type="text" id="title" placeholder="Give your post a title">
+  <div class="editor-grid">
+    <div class="editor-fields">
+      <section class="admin-card">
+        <div class="section-heading"><span>01</span><div><h2>Post details</h2><p>Title, address, date, and classification.</p></div></div>
+        <label for="title">Title</label>
+        <input type="text" id="title" placeholder="Give your post a title">
+        <div class="field-grid">
+          <div>
+            <label for="slug">URL slug</label>
+            <input type="text" id="slug" placeholder="auto-generated-from-title">
+          </div>
+          <div>
+            <label for="date">Date</label>
+            <input type="date" id="date">
+          </div>
+        </div>
+        <p class="hint">The slug becomes the post's permanent address. Avoid changing it after sharing.</p>
+        <label for="tags">Tags (comma-separated)</label>
+        <input type="text" id="tags" placeholder="beginnings, notes">
+      </section>
 
-  <label for="slug">URL slug</label>
-  <input type="text" id="slug" placeholder="auto-generated-from-title">
-  <p class="hint">This becomes blog.html?post=your-slug — best left as-is once published, since it's the post's permanent address.</p>
+      <section class="admin-card">
+        <div class="section-heading"><span>02</span><div><h2>Images</h2><p>JPG, PNG, or WebP · landscape works best for covers.</p></div></div>
+        <label for="cover-image">Cover image</label>
+        <input type="text" id="cover-image" placeholder="https://... or leave blank">
+        <div class="upload-zone">
+          <input type="file" id="cover-upload" accept="image/jpeg,image/png,image/webp,image/gif">
+          <div><strong>Upload a cover</strong><small>Recommended: 1600 × 900, under 2 MB</small></div>
+          <span id="cover-upload-status" class="hint"></span>
+        </div>
+        <img id="cover-preview" class="thumb-preview" alt="Cover preview">
 
-  <label for="date">Date</label>
-  <input type="date" id="date">
+        <label for="inline-upload">Inline image</label>
+        <div class="upload-zone">
+          <input type="file" id="inline-upload" accept="image/jpeg,image/png,image/webp,image/gif">
+          <div><strong>Upload an image for the article</strong><small>You'll get Markdown ready to insert.</small></div>
+          <span id="inline-upload-status" class="hint"></span>
+        </div>
+        <div id="inline-upload-result" class="upload-result hidden"></div>
+      </section>
 
-  <label for="tags">Tags (comma-separated, optional)</label>
-  <input type="text" id="tags" placeholder="beginnings, notes">
+      <section class="admin-card content-card">
+        <div class="section-heading"><span>03</span><div><h2>Writing</h2><p>Write in Markdown; preview updates as you type.</p></div></div>
+        <label for="content">Content</label>
+        <div class="markdown-toolbar" aria-label="Markdown formatting">
+          <button type="button" data-format="heading" title="Heading">H2</button>
+          <button type="button" data-format="bold" title="Bold"><strong>B</strong></button>
+          <button type="button" data-format="italic" title="Italic"><em>I</em></button>
+          <button type="button" data-format="link" title="Link">Link</button>
+          <button type="button" data-format="image" title="Image">Image</button>
+        </div>
+        <textarea id="content" placeholder="Write your post here..."></textarea>
+        <p class="hint">Blank line = new paragraph · **bold** · *italic* · ## heading · [link](url)</p>
+      </section>
+    </div>
 
-  <label for="cover-image">Cover image (optional — shown at the top of the post)</label>
-  <input type="text" id="cover-image" placeholder="https://... or leave blank">
-  <div class="image-upload-row">
-    <input type="file" id="cover-upload" accept="image/*">
-    <span id="cover-upload-status" class="hint"></span>
+    <aside class="preview-column">
+      <div class="preview-card">
+        <div class="preview-label"><span>Live preview</span><span id="preview-status">Draft</span></div>
+        <div id="live-preview" class="live-preview"></div>
+      </div>
+    </aside>
   </div>
-  <img id="cover-preview" class="thumb-preview" alt="Cover preview">
 
-  <label for="inline-upload">Add an image to use inside your post</label>
-  <div class="image-upload-row">
-    <input type="file" id="inline-upload" accept="image/*">
-    <span id="inline-upload-status" class="hint"></span>
-  </div>
-  <div id="inline-upload-result" class="upload-result hidden"></div>
-
-  <label for="content">Content (Markdown)</label>
-  <textarea id="content" placeholder="Write your post here..."></textarea>
-  <p class="hint">Blank line = new paragraph. **bold**, *italic*, ## heading. For an image with a caption: ![alt text](image-url "caption text") — upload an image above to get a URL to paste in.</p>
-
-  <div class="checkbox-row">
-    <input type="checkbox" id="published">
-    <label for="published">Published (visible on the blog)</label>
-  </div>
-
-  <div class="editor-actions">
-    <button id="save-btn" class="btn-primary">Save</button>
+  <div class="editor-actions sticky-actions">
+    <div class="checkbox-row">
+      <input type="checkbox" id="published">
+      <label for="published">Published</label>
+    </div>
+    <span id="dirty-status">All changes saved</span>
+    <span id="save-status" role="status"></span>
+    <div class="action-spacer"></div>
     <button id="delete-btn" class="btn-danger hidden">Delete post</button>
-    <span id="save-status"></span>
+    <button id="save-btn" class="btn-primary">Save</button>
   </div>
 </div>
 
@@ -97,6 +144,7 @@
 
   let currentPostId = null;
   let slugManuallyEdited = false;
+  let hasUnsavedChanges = false;
 
   /* ---------- auth ---------- */
 
@@ -151,25 +199,40 @@
     container.innerHTML = `<p class="post-row-meta">Loading…</p>`;
     try {
       const posts = await loadAllPostsForAdmin();
+      const publishedCount = posts.filter(post => post.published).length;
+      document.getElementById("post-summary").innerHTML = `
+        <span><strong>${posts.length}</strong> total</span>
+        <span><strong>${publishedCount}</strong> published</span>
+        <span><strong>${posts.length - publishedCount}</strong> drafts</span>
+      `;
       if (!posts.length) {
-        container.innerHTML = `<p class="post-row-meta">No posts yet. Click "New post" to write your first one.</p>`;
+        container.innerHTML = `<div class="empty-admin"><p>No posts yet.</p><span>Your first idea deserves a page.</span></div>`;
         return;
       }
       container.innerHTML = posts.map(post => `
         <div class="post-row">
-          <div>
+          <div class="post-row-copy">
             <div class="post-row-title">
               ${escapeHtml(post.title)}
-              ${post.published ? `<span class="badge published">Published</span>` : `<span class="badge">Draft</span>`}
             </div>
-            <div class="post-row-meta">${post.date}</div>
+            <div class="post-row-meta">
+              <span>${formatDate(post.date)}</span>
+              ${(post.tags || []).map(tag => `<span class="post-list-tag">${escapeHtml(tag)}</span>`).join("")}
+            </div>
           </div>
-          <button data-edit="${post.id}">Edit</button>
+          <div class="post-row-actions">
+            ${post.published ? `<span class="badge published">Published</span>` : `<span class="badge">Draft</span>`}
+            <button data-edit="${escapeHtml(post.id)}">Edit</button>
+            <button class="row-delete" data-delete="${escapeHtml(post.id)}" data-title="${escapeHtml(post.title)}">Delete</button>
+          </div>
         </div>
       `).join("");
 
       container.querySelectorAll("[data-edit]").forEach(btn => {
         btn.addEventListener("click", () => openEditor(btn.dataset.edit));
+      });
+      container.querySelectorAll("[data-delete]").forEach(btn => {
+        btn.addEventListener("click", () => deletePost(btn.dataset.delete, btn.dataset.title));
       });
     } catch (err) {
       console.error(err);
@@ -184,7 +247,10 @@
     showEditor();
   });
 
-  document.getElementById("back-btn").addEventListener("click", showList);
+  document.getElementById("back-btn").addEventListener("click", () => {
+    if (hasUnsavedChanges && !confirm("Discard your unsaved changes?")) return;
+    showList();
+  });
 
   function resetEditor() {
     currentPostId = null;
@@ -201,6 +267,8 @@
     document.getElementById("save-status").textContent = "";
     document.getElementById("cover-preview").style.display = "none";
     document.getElementById("inline-upload-result").classList.add("hidden");
+    updatePreview();
+    markClean();
   }
 
   async function openEditor(postId) {
@@ -231,6 +299,8 @@
       preview.style.display = "block";
     }
     showEditor();
+    updatePreview();
+    markClean();
   }
 
   document.getElementById("title").addEventListener("input", (e) => {
@@ -242,6 +312,76 @@
   document.getElementById("slug").addEventListener("input", () => {
     slugManuallyEdited = true;
   });
+
+  /* ---------- writing experience ---------- */
+
+  function markDirty() {
+    hasUnsavedChanges = true;
+    document.getElementById("dirty-status").textContent = "Unsaved changes";
+  }
+
+  function markClean() {
+    hasUnsavedChanges = false;
+    document.getElementById("dirty-status").textContent = "All changes saved";
+  }
+
+  function updatePreview() {
+    const title = document.getElementById("title").value.trim() || "Untitled post";
+    const date = document.getElementById("date").value;
+    const tags = document.getElementById("tags").value.split(",").map(tag => tag.trim()).filter(Boolean);
+    const coverImage = document.getElementById("cover-image").value.trim();
+    const content = document.getElementById("content").value;
+    const safeCover = safeImageUrl(coverImage);
+    document.getElementById("preview-status").textContent = document.getElementById("published").checked ? "Published" : "Draft";
+    document.getElementById("live-preview").innerHTML = `
+      <article>
+        <h1 class="post-title">${escapeHtml(title)}</h1>
+        <p class="post-meta">${date ? formatDate(date) : "Choose a date"}</p>
+        ${tags.length ? `<div class="post-tags">${tags.map(tag => `<span class="post-tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
+        ${safeCover ? `<img class="post-cover" src="${escapeHtml(safeCover)}" alt="">` : ""}
+        <div class="post-body">${content ? renderMarkdown(content) : `<p class="preview-empty">Your writing will appear here.</p>`}</div>
+      </article>
+    `;
+  }
+
+  function safeImageUrl(value) {
+    if (!value) return "";
+    try {
+      const url = new URL(value, window.location.href);
+      return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+    } catch (_) {
+      return "";
+    }
+  }
+
+  editorView.querySelectorAll('input[type="text"], input[type="date"], textarea').forEach(field => {
+    field.addEventListener("input", () => { markDirty(); updatePreview(); });
+  });
+  document.getElementById("published").addEventListener("change", () => { markDirty(); updatePreview(); });
+
+  document.querySelectorAll("[data-format]").forEach(button => {
+    button.addEventListener("click", () => insertMarkdown(button.dataset.format));
+  });
+
+  function insertMarkdown(format) {
+    const textarea = document.getElementById("content");
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = textarea.value.slice(start, end);
+    const formats = {
+      heading: [`## `, "", "Heading"],
+      bold: ["**", "**", "bold text"],
+      italic: ["*", "*", "italic text"],
+      link: ["[", "](https://example.com)", "link text"],
+      image: ["![", `](image-url "caption")`, "alt text"],
+    };
+    const [before, after, fallback] = formats[format];
+    const replacement = before + (selected || fallback) + after;
+    textarea.setRangeText(replacement, start, end, "end");
+    textarea.focus();
+    markDirty();
+    updatePreview();
+  }
 
   /* ---------- image uploads ---------- */
 
@@ -257,6 +397,8 @@
       preview.src = url;
       preview.style.display = "block";
       status.textContent = "Uploaded.";
+      markDirty();
+      updatePreview();
     } catch (err) {
       console.error(err);
       status.textContent = "Upload failed.";
@@ -272,7 +414,15 @@
     try {
       const url = await uploadImage(file);
       resultBox.classList.remove("hidden");
-      resultBox.innerHTML = `Paste this where you want the image:<br><code>![describe the image](${url} "optional caption")</code>`;
+      const markdown = `![describe the image](${url} "optional caption")`;
+      resultBox.innerHTML = `<span>Image ready.</span><code>${escapeHtml(markdown)}</code><button type="button" id="insert-uploaded-image">Insert into post</button>`;
+      document.getElementById("insert-uploaded-image").addEventListener("click", () => {
+        const textarea = document.getElementById("content");
+        textarea.setRangeText(`\n\n${markdown}\n\n`, textarea.selectionStart, textarea.selectionEnd, "end");
+        textarea.focus();
+        markDirty();
+        updatePreview();
+      });
       status.textContent = "Uploaded.";
     } catch (err) {
       console.error(err);
@@ -323,18 +473,24 @@
     currentPostId = slug;
     statusEl.textContent = published ? "Published." : "Saved as draft.";
     document.getElementById("delete-btn").classList.remove("hidden");
+    markClean();
   });
 
   document.getElementById("delete-btn").addEventListener("click", async () => {
     if (!currentPostId) return;
-    if (!confirm("Delete this post? This can't be undone.")) return;
-    const { error } = await supabaseClient.from("posts").delete().eq("id", currentPostId);
+    await deletePost(currentPostId, document.getElementById("title").value);
+  });
+
+  async function deletePost(postId, title) {
+    if (!confirm(`Delete "${title}"? This can't be undone.`)) return;
+    const { error } = await supabaseClient.from("posts").delete().eq("id", postId);
     if (error) {
       alert("Couldn't delete this post.");
       return;
     }
+    markClean();
     showList();
-  });
+  }
 
   function escapeHtml(str) {
     const div = document.createElement("div");
