@@ -145,14 +145,13 @@ button:focus-visible {
 
 /* ---------- Sidebar / About the author ---------- */
 
-.sidebar {
-  position: sticky;
-  top: 32px;
-}
-
+.sidebar,
 .newsletter-sidebar {
   position: sticky;
   top: 32px;
+  align-self: start;
+  height: max-content;
+  z-index: 2;
 }
 
 .about-card,
