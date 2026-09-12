@@ -47,7 +47,7 @@ function renderMarkdown(markdown) {
       : "";
     return `<figure class="post-image"><img src="${escapeHtml(token.href)}" alt="${escapeHtml(token.text)}">${caption}</figure>`;
   };
-  return marked.parse(markdown || "", { renderer });
+  return marked.parse(markdown || "", { renderer, breaks: true });
 }
 
 /* ---------- reading posts (used by index.html and blog.html) ---------- */
