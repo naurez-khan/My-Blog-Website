@@ -84,7 +84,7 @@
         <input type="text" id="cover-image" placeholder="https://... or leave blank">
         <div class="upload-zone">
           <input type="file" id="cover-upload" accept="image/jpeg,image/png,image/webp,image/gif">
-          <div><strong>Upload a cover</strong><small>Recommended: 1600 × 900, under 2 MB</small></div>
+          <div><strong>Upload a cover</strong><small>1600 × 900 WebP recommended · under 500 KB ideal · 2 MB max</small></div>
           <span id="cover-upload-status" class="hint"></span>
         </div>
         <img id="cover-preview" class="thumb-preview" alt="Cover preview">
@@ -92,7 +92,7 @@
         <label for="inline-upload">Inline image</label>
         <div class="upload-zone">
           <input type="file" id="inline-upload" accept="image/jpeg,image/png,image/webp,image/gif">
-          <div><strong>Upload an image for the article</strong><small>You'll get Markdown ready to insert.</small></div>
+          <div><strong>Upload an image for the article</strong><small>Up to 1600px wide · under 700 KB ideal · 2 MB max</small></div>
           <span id="inline-upload-status" class="hint"></span>
         </div>
         <div id="inline-upload-result" class="upload-result hidden"></div>
@@ -411,7 +411,7 @@
       updatePreview();
     } catch (err) {
       console.error(err);
-      status.textContent = "Upload failed.";
+      status.textContent = err.message || "Upload failed.";
     }
   });
 
@@ -436,7 +436,7 @@
       status.textContent = "Uploaded.";
     } catch (err) {
       console.error(err);
-      status.textContent = "Upload failed.";
+      status.textContent = err.message || "Upload failed.";
     }
   });
 
