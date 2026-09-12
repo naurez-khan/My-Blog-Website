@@ -132,7 +132,7 @@ button:focus-visible {
 .layout {
   max-width: var(--wide-width);
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 24px 32px;
   display: grid;
   grid-template-columns: var(--newsletter-width) minmax(0, 1fr) var(--sidebar-width);
   gap: 32px;
