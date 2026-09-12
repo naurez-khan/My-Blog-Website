@@ -407,7 +407,7 @@ button:focus-visible {
 }
 
 .post-body blockquote {
-  margin: 26px 0;
+  margin: 26px 0 26px 2rem;
   padding: 0 0 0 18px;
   border-left: 2px solid var(--stamp);
   background: transparent;
