@@ -407,11 +407,14 @@ button:focus-visible {
 }
 
 .post-body blockquote {
-  margin: 28px 0;
-  padding: 4px 0 4px 20px;
-  border-left: 3px solid var(--stamp);
+  margin: 26px 0;
+  padding: 0 0 0 18px;
+  border-left: 2px solid var(--stamp);
+  background: transparent;
   color: var(--ink-soft);
-  font-style: italic;
+  font-size: 0.95em;
+  font-style: normal;
+  line-height: 1.6;
 }
 
 .post-body blockquote p {
