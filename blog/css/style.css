@@ -147,6 +147,8 @@ button:focus-visible {
 
 .sidebar,
 .newsletter-sidebar {
+  position: sticky;
+  top: 32px;
   align-self: start;
   height: max-content;
   z-index: 2;
@@ -154,8 +156,7 @@ button:focus-visible {
 
 .about-card,
 .newsletter-card {
-  position: fixed;
-  width: var(--sidebar-width);
+  width: 100%;
   border: 1px solid var(--rule);
   background: var(--paper-soft);
   padding: 22px 20px 24px;
